@@ -1,5 +1,7 @@
 import Taro, {Component} from '@tarojs/taro'
-import {View, Button, Text} from '@tarojs/components'
+import {View} from '@tarojs/components'
+import {AtAvatar} from 'taro-ui'
+
 import {connect} from '@tarojs/redux'
 
 import {add, minus, asyncAdd} from '../../actions/counter'
@@ -28,20 +30,31 @@ class Index extends Component {
 
     constructor(props) {
         super(props)
-        this.data = [
-            1, 2, 3
-        ]
+        this.state = {
+            post: []
+        }
     }
 
     componentWillMount() {
+
+    }
+
+    componentDidMount() {
         Taro.request({
-            url: 'https://www.v2ex.com/api/topics/latest.json',
+            url: 'http://localhost:12345/api/topics/latest.json',
+            method: 'get',
             data: {},
             header: {
                 'content-type': 'application/json',
-                Authentication:'none'
+                // Authentication: 'none'
             }
-        }).then(res => console.log(res.data))
+        }).then(res => {
+            console.log(res.data)
+            this.setState({
+                post: res.data
+            })
+
+        })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -57,21 +70,48 @@ class Index extends Component {
     componentDidHide() {
     }
 
+    goPostDetail = (e) => {
+        // 跳转到目的页面，打开新页面
+        Taro.navigateTo({
+            url: '/pages/post/post'
+        })
+    }
+
     render() {
-        const listItems = this.data.map((number) =>
-            <View><Text>{number}</Text></View>
+        let listItems = this.state.post.map(item =>
+            <View className='post' onClick={this.goPostDetail}>
+                <View className='left'>
+                    <AtAvatar size='small' image={item.member.avatar_normal}></AtAvatar>
+                    <View className='replies'>{item.replies}</View>
+                </View>
+                <View className='right'>
+                    <View className='title'>{item.title}</View>
+                    <View className='info'>
+                        <View className='node'>{item.node.title}</View>
+                        <View className='time'>{new Date(item.created * 1000).toLocaleDateString()}-{new Date(item.created * 1000).toLocaleTimeString()}</View>
+                    </View>
+                </View>
+            </View>
         )
         return (
-            <View className='index'>
-                <Button className='add_btn' onClick={this.props.add}>+</Button>
-                <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-                <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-                <View><Text>{this.props.counter.num}</Text></View>
-                <View><Text>Hello, World</Text></View>
-                <View>{listItems}</View>
-            </View>
+            <View>{listItems}</View>
         )
     }
 }
 
 export default Index
+
+
+/*
+
+
+
+*  <View className='index'>
+                <Button className='add_btn' onClick={this.props.add}>+</Button>
+                <Button className='dec_btn' onClick={this.props.dec}>-</Button>
+                <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
+                <View><Text>{this.props.counter.num}</Text></View>
+            </View>
+*
+*
+* */
