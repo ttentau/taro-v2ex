@@ -70,16 +70,16 @@ class Index extends Component {
     componentDidHide() {
     }
 
-    goPostDetail = (e) => {
+    goPostDetail = (id, e) => {
         // 跳转到目的页面，打开新页面
         Taro.navigateTo({
-            url: '/pages/post/post'
+            url: '/pages/post/post?id=' + id
         })
     }
 
     render() {
         let listItems = this.state.post.map(item =>
-            <View className='post' onClick={this.goPostDetail}>
+            <View className='post' onClick={this.goPostDetail.bind(this, item.id)}>
                 <View className='left'>
                     <AtAvatar size='small' image={item.member.avatar_normal}></AtAvatar>
                     <View className='replies'>{item.replies}</View>

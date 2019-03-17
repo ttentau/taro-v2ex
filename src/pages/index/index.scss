@@ -1,7 +1,6 @@
 .post {
     display: flex;
-    align-items: start;
-    margin: 15px;
+    margin: 15px 15px 20px 15px;
     &:active{
         background: rgba(231, 231, 231, 0.6);
     }
@@ -35,13 +34,15 @@
             //margin-left: 20px;
             font-size: 28px;
             margin: 0;
-            padding-top :-10px;
         }
         .info{
             display: flex;
             font-size: 20px;
             .node{
                 background: #e1e1e1;
+                padding: 0 10px;
+                color: #999;
+                border-radius: 5px;
             }
             .time{
                 margin-left: 20px;

@@ -36,12 +36,10 @@ class Post extends Component {
     }
 
     componentWillMount() {
-
-    }
-
-    componentDidMount() {
+        console.log(this.$router.params) // 输出 { id: 2, type: 'test' }
+        let id = this.$router.params.id
         Taro.request({
-            url: 'http://localhost:12345/api/topics/latest.json',
+            url: 'http://localhost:12345/api/topics/show.json?id='+id,
             method: 'get',
             data: {},
             header: {
@@ -50,11 +48,14 @@ class Post extends Component {
             }
         }).then(res => {
             console.log(res.data)
-            this.setState({
-                post: res.data
-            })
+            // this.setState({
+            //     post: res.data
+            // })
 
         })
+    }
+
+    componentDidMount() {
     }
 
     componentWillReceiveProps(nextProps) {
