@@ -79,7 +79,7 @@ class Index extends Component {
 
     render() {
         let listItems = this.state.post.map(item =>
-            <View className='post' onClick={this.goPostDetail.bind(this, item.id)}>
+            <View className='post' key={item.id} onClick={this.goPostDetail.bind(this, item.id)}>
                 <View className='left'>
                     <AtAvatar size='small' image={item.member.avatar_normal}></AtAvatar>
                     <View className='replies'>{item.replies}</View>

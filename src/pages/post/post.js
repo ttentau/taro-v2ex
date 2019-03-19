@@ -1,5 +1,5 @@
 import Taro, {Component} from '@tarojs/taro'
-import {View} from '@tarojs/components'
+import {View, RichText} from '@tarojs/components'
 import {AtAvatar} from 'taro-ui'
 
 import {connect} from '@tarojs/redux'
@@ -31,7 +31,8 @@ class Post extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            post: [1, 2, 3]
+            post: {},
+            comment: []
         }
     }
 
@@ -40,18 +41,36 @@ class Post extends Component {
         let id = this.$router.params.id
         Taro.request({
             url: 'http://localhost:12345/api/topics/show.json?id='+id,
+            // url: 'http://localhost:12345/api/topics/show.json?id=546361',
             method: 'get',
             data: {},
-            header: {
-                'content-type': 'application/json',
-                // Authentication: 'none'
-            }
+            header: {'content-type': 'application/json',}
         }).then(res => {
-            console.log(res.data)
-            // this.setState({
-            //     post: res.data
-            // })
-
+            this.setState({
+                post: res.data[0]
+            })
+        })
+        Taro.request({
+            url: 'http://localhost:12345/api/replies/show.json?topic_id='+id,
+            // url: 'http://localhost:12345/api/replies/show.json?topic_id=546361',
+            method: 'get',
+            data: {},
+            header: {'content-type': 'application/json',}
+        }).then(res => {
+            this.setState({
+                comment: res.data
+            })
+        })
+        Taro.request({
+            url: 'http://localhost:12345/api/replies/show.json?topic_id='+id,
+            // url: 'http://localhost:12345/api/replies/show.json?topic_id=546361',
+            method: 'get',
+            data: {},
+            header: {'content-type': 'application/json',}
+        }).then(res => {
+            this.setState({
+                comment: res.data
+            })
         })
     }
 
@@ -72,9 +91,30 @@ class Post extends Component {
     }
 
     render() {
-        let listItems = []
+        let post = this.state.post
+        let comments = this.state.comment.map((item,index) =>
+            <View className='at-article__p' key={item.id}>{index}
+                <RichText   nodes={item.content_rendered}/>
+            </View>
+        )
         return (
-            <View>{listItems}</View>
+            <View className='at-article'>
+                <View className='at-article__h1'>
+                    {post.title}
+                </View>
+                <View className='at-article__info'>
+                    <Text>{new Date(post.created * 1000).toLocaleDateString()}</Text>
+                    <Text className='author'>{post.member.username}</Text>
+                </View>
+                <View className='at-article__content'>
+                    <View className='at-article__section'>
+                        <View className='at-article__p'>
+                            <RichText nodes={post.content_rendered}/>
+                        </View>
+                    </View>
+                </View>
+                <View>{comments}</View>
+            </View>
         )
     }
 }
