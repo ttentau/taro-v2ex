@@ -7,6 +7,7 @@ import {connect} from '@tarojs/redux'
 import {add, minus, asyncAdd} from '../../actions/counter'
 
 import './index.scss'
+import Config from "../../config/config"
 
 
 @connect(({counter}) => ({
@@ -25,7 +26,8 @@ import './index.scss'
 class Index extends Component {
 
     config = {
-        navigationBarTitleText: '首页'
+        navigationBarTitleText: '首页',
+        enablePullDownRefresh:true
     }
 
     constructor(props) {
@@ -35,26 +37,33 @@ class Index extends Component {
         }
     }
 
-    componentWillMount() {
-
+   async onPullDownRefresh(){
+       await this.getData()
+       Taro.stopPullDownRefresh()
     }
 
-    componentDidMount() {
-        Taro.request({
-            url: 'http://localhost:12345/api/topics/latest.json',
+    async getData(){
+        let res = await Taro.request({
+            url: Config.API_URL+'/api/topics/latest.json',
             method: 'get',
             data: {},
             header: {
                 'content-type': 'application/json',
                 // Authentication: 'none'
             }
-        }).then(res => {
-            console.log(res.data)
-            this.setState({
-                post: res.data
-            })
-
         })
+        console.log(res.data)
+        this.setState({
+            post: res.data
+        })
+    }
+
+    componentWillMount() {
+
+    }
+
+    componentDidMount() {
+       this.getData()
     }
 
     componentWillReceiveProps(nextProps) {

@@ -1,5 +1,5 @@
 import Taro, {Component} from '@tarojs/taro'
-import {View, RichText} from '@tarojs/components'
+import {View, RichText, Image, Text} from '@tarojs/components'
 import {AtAvatar} from 'taro-ui'
 
 import {connect} from '@tarojs/redux'
@@ -7,6 +7,8 @@ import {connect} from '@tarojs/redux'
 import {add, minus, asyncAdd} from '../../actions/counter'
 
 import './post.scss'
+import Config from "../../config/config"
+import commentPng from '../../assets/imgs/comment.png'
 
 
 @connect(({counter}) => ({
@@ -25,7 +27,8 @@ import './post.scss'
 class Post extends Component {
 
     config = {
-        navigationBarTitleText: '首页'
+        navigationBarTitleText: '首页',
+        enablePullDownRefresh: true
     }
 
     constructor(props) {
@@ -36,12 +39,24 @@ class Post extends Component {
         }
     }
 
+    async onPullDownRefresh() {
+        await this.getData()
+        Taro.stopPullDownRefresh()
+    }
+
     componentWillMount() {
-        console.log(this.$router.params) // 输出 { id: 2, type: 'test' }
+        this.getData()
+    }
+
+    getData() {
         let id = this.$router.params.id
+        this.getPost(id)
+        this.getComments(id)
+    }
+
+    getPost(id) {
         Taro.request({
-            url: 'http://localhost:12345/api/topics/show.json?id='+id,
-            // url: 'http://localhost:12345/api/topics/show.json?id=546361',
+            url: Config.API_URL + 'api/topics/show.json?id=' + id,
             method: 'get',
             data: {},
             header: {'content-type': 'application/json',}
@@ -50,20 +65,11 @@ class Post extends Component {
                 post: res.data[0]
             })
         })
+    }
+
+    getComments(id) {
         Taro.request({
-            url: 'http://localhost:12345/api/replies/show.json?topic_id='+id,
-            // url: 'http://localhost:12345/api/replies/show.json?topic_id=546361',
-            method: 'get',
-            data: {},
-            header: {'content-type': 'application/json',}
-        }).then(res => {
-            this.setState({
-                comment: res.data
-            })
-        })
-        Taro.request({
-            url: 'http://localhost:12345/api/replies/show.json?topic_id='+id,
-            // url: 'http://localhost:12345/api/replies/show.json?topic_id=546361',
+            url: Config.API_URL + '/api/replies/show.json?topic_id=' + id,
             method: 'get',
             data: {},
             header: {'content-type': 'application/json',}
@@ -75,6 +81,7 @@ class Post extends Component {
     }
 
     componentDidMount() {
+        console.log(commentPng)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -92,13 +99,28 @@ class Post extends Component {
 
     render() {
         let post = this.state.post
-        let comments = this.state.comment.map((item,index) =>
-            <View className='at-article__p' key={item.id}>{index}
-                <RichText   nodes={item.content_rendered}/>
+        let comments = this.state.comment.map((item, index) =>
+            <View className='at-article__p comment' key={item.id}>
+                <View className='info'>
+                    <AtAvatar size='small' image={item.member.avatar_normal}/>
+                    <View className='section'>
+                        <View className='title'>
+                            <View>
+                                <Text>{item.member.username}</Text>
+                                <Text className='index'>{index+1}楼</Text>
+                            </View>
+                            <View className='date'>{new Date(item.created * 1000).toLocaleDateString()}</View>
+                        </View>
+                        <View className='reply'>
+                            <Image src={commentPng}/>
+                        </View>
+                    </View>
+                </View>
+                <RichText nodes={item.content_rendered}/>
             </View>
         )
         return (
-            <View className='at-article'>
+            <View className='at-article post'>
                 <View className='at-article__h1'>
                     {post.title}
                 </View>
@@ -113,7 +135,7 @@ class Post extends Component {
                         </View>
                     </View>
                 </View>
-                <View>{comments}</View>
+                <View className='comments'>{comments}</View>
             </View>
         )
     }
