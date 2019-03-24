@@ -27,7 +27,7 @@ class Index extends Component {
 
     config = {
         navigationBarTitleText: '首页',
-        enablePullDownRefresh:true
+        enablePullDownRefresh: true
     }
 
     constructor(props) {
@@ -37,14 +37,15 @@ class Index extends Component {
         }
     }
 
-   async onPullDownRefresh(){
-       await this.getData()
-       Taro.stopPullDownRefresh()
+    async onPullDownRefresh() {
+        await this.getData()
+        Taro.stopPullDownRefresh()
     }
 
-    async getData(){
+    async getData() {
         let res = await Taro.request({
-            url: Config.API_URL+'/api/topics/latest.json',
+            // url: Config.API_URL + '/api/topics/latest.json',
+            url: 'https://www.v2ex.com/api/topics/hot.json',
             method: 'get',
             data: {},
             header: {
@@ -52,18 +53,18 @@ class Index extends Component {
                 // Authentication: 'none'
             }
         })
-        console.log(res.data)
+        Taro.hideLoading()
         this.setState({
             post: res.data
         })
     }
 
     componentWillMount() {
-
+        Taro.showLoading()
+        this.getData()
     }
 
     componentDidMount() {
-       this.getData()
     }
 
     componentWillReceiveProps(nextProps) {
@@ -87,6 +88,7 @@ class Index extends Component {
     }
 
     render() {
+
         let listItems = this.state.post.map(item =>
             <View className='post' key={item.id} onClick={this.goPostDetail.bind(this, item.id)}>
                 <View className='left'>

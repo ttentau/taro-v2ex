@@ -48,32 +48,41 @@ class Post extends Component {
         this.getData()
     }
 
-    getData() {
+    async getData() {
+        Taro.showLoading()
         let id = this.$router.params.id
-        this.getPost(id)
-        this.getComments(id)
+        await this.getPost(id)
+        await this.getComments(id)
     }
 
     getPost(id) {
         Taro.request({
-            url: Config.API_URL + 'api/topics/show.json?id=' + id,
+            // url: Config.API_URL + 'api/topics/show.json?id=' + id,
+            url:'https://www.v2ex.com/api/topics/show.json?id=' + id,
             method: 'get',
             data: {},
             header: {'content-type': 'application/json',}
         }).then(res => {
-            this.setState({
-                post: res.data[0]
+            let post = res.data[0]
+            post.content_rendered = post.content_rendered.replace(/\<img/gi, '<img style="max-width:100%;height:auto" ')
+            Taro.setNavigationBarTitle({
+                title: post.title
             })
+            this.setState({post})
         })
     }
 
     getComments(id) {
         Taro.request({
-            url: Config.API_URL + '/api/replies/show.json?topic_id=' + id,
+            // url: Config.API_URL + '/api/replies/show.json?topic_id=' + id,
+            url:'https://www.v2ex.com/api/replies/show.json?topic_id=' + id,
             method: 'get',
             data: {},
             header: {'content-type': 'application/json',}
         }).then(res => {
+            setTimeout(()=>{
+                Taro.hideLoading()
+            },500)
             this.setState({
                 comment: res.data
             })
@@ -81,7 +90,6 @@ class Post extends Component {
     }
 
     componentDidMount() {
-        console.log(commentPng)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -107,7 +115,7 @@ class Post extends Component {
                         <View className='title'>
                             <View>
                                 <Text>{item.member.username}</Text>
-                                <Text className='index'>{index+1}楼</Text>
+                                <Text className='index'>{index + 1}楼</Text>
                             </View>
                             <View className='date'>{new Date(item.created * 1000).toLocaleDateString()}</View>
                         </View>
