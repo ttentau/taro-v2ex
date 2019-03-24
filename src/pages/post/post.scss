@@ -1,30 +1,36 @@
-.post{
-    .author{
+.post {
+    .author {
         margin-left: 50px;
     }
-    .comments{
-        .comment{
+
+    .comments {
+        .comment {
             border-bottom: 1px solid gainsboro;
             margin-bottom: 20px;
             padding-bottom: 20px;
-            .info{
+
+            .info {
                 margin-bottom: 10px;
                 display: flex;
-                .section{
+
+                .section {
                     margin-left: 20px;
                     width: 100%;
                     display: flex;
                     justify-content: space-between;
-                    .index{
+
+                    .index {
                         font-size: 20px;
                         margin-left: 20px;
                     }
-                    .date{
+
+                    .date {
                         font-size: 22px;
                     }
                 }
-                .reply{
-                    Image{
+
+                .reply {
+                    Image {
                         width: 30px;
                         height: 30px;
                     }
