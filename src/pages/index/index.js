@@ -45,7 +45,8 @@ class Index extends Component {
     async getData() {
         let res = await Taro.request({
             // url: Config.API_URL + '/api/topics/latest.json',
-            url: 'https://www.v2ex.com/api/topics/hot.json',
+            url: 'https://www.v2ex.com'+ '/api/topics/latest.json',
+            // url: 'https://www.v2ex.com/api/topics/hot.json',
             method: 'get',
             data: {},
             header: {
