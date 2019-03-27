@@ -1,6 +1,6 @@
 import Taro, {Component} from '@tarojs/taro'
 import {View} from '@tarojs/components'
-import {AtAvatar} from 'taro-ui'
+import {AtAvatar, AtTabBar} from 'taro-ui'
 
 import {connect} from '@tarojs/redux'
 
@@ -33,7 +33,8 @@ class Index extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            post: []
+            post: [],
+            currentPage: 2
         }
     }
 
@@ -45,7 +46,7 @@ class Index extends Component {
     async getData() {
         let res = await Taro.request({
             // url: Config.API_URL + '/api/topics/latest.json',
-            url: 'https://www.v2ex.com'+ '/api/topics/latest.json',
+            url: 'https://www.v2ex.com' + '/api/topics/latest.json',
             // url: 'https://www.v2ex.com/api/topics/hot.json',
             method: 'get',
             data: {},
@@ -54,6 +55,7 @@ class Index extends Component {
                 // Authentication: 'none'
             }
         })
+        console.log(res)
         Taro.hideLoading()
         this.setState({
             post: res.data
@@ -88,9 +90,13 @@ class Index extends Component {
         })
     }
 
+    changeCurrentPage = (index) => {
+        this.setState({currentPage: index})
+    }
+
     render() {
 
-        let listItems = this.state.post.map(item =>
+        let home = this.state.post.map(item =>
             <View className='post' key={item.id} onClick={this.goPostDetail.bind(this, item.id)}>
                 <View className='left'>
                     <AtAvatar size='small' image={item.member.avatar_normal}></AtAvatar>
@@ -105,8 +111,26 @@ class Index extends Component {
                 </View>
             </View>
         )
+        let my =
+            <View>
+                <AtAvatar image='https://jdc.jd.com/img/200'></AtAvatar>
+            </View>
         return (
-            <View>{listItems}</View>
+            <View>
+                <View>{this.state.currentPage === 0 ? home : ''}</View>
+                <View>{this.state.currentPage === 1 ? 1 : ''}</View>
+                <View>{this.state.currentPage === 2 ? my : ''}</View>
+                <AtTabBar
+                    fixed
+                    tabList={[
+                        {title: '首页', iconType: 'home'},
+                        {title: '节点', iconType: 'link'},
+                        {title: '我的', iconType: 'user'}
+                    ]}
+                    onClick={this.changeCurrentPage.bind(this)}
+                    current={this.state.currentPage}
+                />
+            </View>
         )
     }
 }
@@ -115,7 +139,6 @@ export default Index
 
 
 /*
-
 
 
 *  <View className='index'>
