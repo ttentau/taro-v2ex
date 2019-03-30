@@ -4,10 +4,9 @@ import {AtAvatar, AtTabBar} from 'taro-ui'
 
 import {connect} from '@tarojs/redux'
 
-import {add, minus, asyncAdd} from '../../actions/counter'
+import {add, asyncAdd, minus} from '../../actions/counter'
 
 import './index.scss'
-import Config from "../../config/config"
 
 
 @connect(({counter}) => ({
